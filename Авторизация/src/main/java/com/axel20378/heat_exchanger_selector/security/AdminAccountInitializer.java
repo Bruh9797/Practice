@@ -6,16 +6,13 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.Instant;
+import java.util.Locale;
 
-/**
- * При первом запуске системы создает учетную запись администратора,
- * если ни одного пользователя с ролью ADMIN еще не существует.
- * Логин/пароль задаются через свойства app.security.admin.* (см. application.yaml),
- * пароль по умолчанию нужно сменить после первого входа в проде.
- */
+/** Создает стартовые учетные записи, заданные активным профилем. */
 @Configuration
 public class AdminAccountInitializer {
 
@@ -23,36 +20,65 @@ public class AdminAccountInitializer {
 
     @Bean
     @ConfigurationProperties(prefix = "app.security.admin")
-    public AdminProperties adminProperties() {
-        return new AdminProperties();
+    public AccountProperties adminProperties() {
+        return new AccountProperties();
     }
 
     @Bean
-    public CommandLineRunner seedAdminAccount(UserRepository userRepository,
-                                               PasswordEncoder passwordEncoder,
-                                               AdminProperties adminProperties) {
+    @ConfigurationProperties(prefix = "app.security.demo-user")
+    public DemoAccountProperties demoAccountProperties() {
+        return new DemoAccountProperties();
+    }
+
+    @Bean
+    public CommandLineRunner seedSecurityAccounts(UserRepository userRepository,
+                                                  PasswordEncoder passwordEncoder,
+                                                  @Qualifier("adminProperties") AccountProperties adminProperties,
+                                                  @Qualifier("demoAccountProperties") DemoAccountProperties demoAccountProperties) {
         return args -> {
-            if (userRepository.findByUsername(adminProperties.getUsername()).isPresent()) {
-                return;
+            seed(userRepository, passwordEncoder, adminProperties, Role.ADMIN);
+            if (demoAccountProperties.isEnabled()) {
+                seed(userRepository, passwordEncoder, demoAccountProperties, Role.USER);
             }
-            User admin = User.builder()
-                    .username(adminProperties.getUsername())
-                    .passwordHash(passwordEncoder.encode(adminProperties.getPassword()))
-                    .email(adminProperties.getEmail())
-                    .role(Role.ADMIN)
-                    .enabled(true)
-                    .createdAt(Instant.now())
-                    .build();
-            userRepository.save(admin);
-            log.warn("Создана учетная запись администратора по умолчанию: '{}'. " +
-                    "Смените пароль после первого входа!", adminProperties.getUsername());
         };
     }
 
-    public static class AdminProperties {
-        private String username = "admin";
-        private String password = "admin12345";
-        private String email = "admin@heat-exchanger.local";
+    private void seed(UserRepository userRepository,
+                      PasswordEncoder passwordEncoder,
+                      AccountProperties properties,
+                      Role role) {
+        requireConfigured(properties, role);
+        String username = properties.getUsername().trim();
+        if (userRepository.findByUsername(username).isPresent()) {
+            return;
+        }
+
+        User account = User.builder()
+                .username(username)
+                .passwordHash(passwordEncoder.encode(properties.getPassword()))
+                .email(properties.getEmail().trim().toLowerCase(Locale.ROOT))
+                .role(role)
+                .enabled(true)
+                .createdAt(Instant.now())
+                .build();
+        userRepository.save(account);
+        log.info("Создана стартовая учетная запись {}: '{}'", role, username);
+    }
+
+    private void requireConfigured(AccountProperties properties, Role role) {
+        if (isBlank(properties.getUsername()) || isBlank(properties.getPassword()) || isBlank(properties.getEmail())) {
+            throw new IllegalStateException("Не заданы обязательные параметры стартовой учетной записи " + role);
+        }
+    }
+
+    private boolean isBlank(String value) {
+        return value == null || value.isBlank();
+    }
+
+    public static class AccountProperties {
+        private String username;
+        private String password;
+        private String email;
 
         public String getUsername() {
             return username;
@@ -76,6 +102,18 @@ public class AdminAccountInitializer {
 
         public void setEmail(String email) {
             this.email = email;
+        }
+    }
+
+    public static class DemoAccountProperties extends AccountProperties {
+        private boolean enabled;
+
+        public boolean isEnabled() {
+            return enabled;
+        }
+
+        public void setEnabled(boolean enabled) {
+            this.enabled = enabled;
         }
     }
 }

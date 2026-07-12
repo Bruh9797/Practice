@@ -1,0 +1,45 @@
+@startuml
+left to right direction
+skinparam backgroundColor #FFFFFF
+skinparam actorStyle awesome
+skinparam usecase {
+  BackgroundColor #F1F7F8
+  BorderColor #0C8791
+  ArrowColor #526474
+}
+
+actor "Гость" as Guest
+actor "Пользователь" as User
+actor "Администратор" as Admin
+
+rectangle "ThermoSelect" {
+  usecase "Регистрация" as UC_Register
+  usecase "Вход" as UC_Login
+  usecase "Выход" as UC_Logout
+  usecase "Поиск и фильтрация" as UC_Search
+  usecase "Просмотр карточки" as UC_Detail
+  usecase "Сравнение до 4 моделей" as UC_Compare
+  usecase "Просмотр аккаунта" as UC_Account
+  usecase "Управление каталогом" as UC_Catalog
+  usecase "Публикация и архив" as UC_Status
+  usecase "Управление производителями" as UC_Manufacturers
+  usecase "Управление пользователями" as UC_Users
+}
+
+Guest --> UC_Register
+Guest --> UC_Login
+User --|> Guest
+Admin --|> User
+User --> UC_Logout
+User --> UC_Search
+User --> UC_Detail
+User --> UC_Compare
+User --> UC_Account
+Admin --> UC_Catalog
+Admin --> UC_Status
+Admin --> UC_Manufacturers
+Admin --> UC_Users
+UC_Search .> UC_Detail : <<include>>
+UC_Compare .> UC_Detail : <<extend>>
+UC_Catalog .> UC_Status : <<include>>
+@enduml

@@ -1,0 +1,10 @@
+flowchart LR
+    B[Браузер] -->|HTTPS / один origin| SPA[React SPA]
+    SPA -->|JSON + JSESSIONID + CSRF| API[Spring MVC API]
+    API --> SEC[Spring Security]
+    API --> CAT[Каталог и ранжирование]
+    API --> ADM[Администрирование]
+    SEC --> USERS[(users)]
+    CAT --> DB[(H2 demo / PostgreSQL)]
+    ADM --> DB
+    SEED[Проверенный demo-catalog.psv] -->|только при пустом demo-каталоге| DB

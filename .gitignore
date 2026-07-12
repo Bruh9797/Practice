@@ -1,0 +1,9 @@
+Авторизация/target/
+Авторизация/data/
+Авторизация/frontend/node_modules/
+Авторизация/frontend/dist/
+Авторизация/frontend/coverage/
+
+.idea/
+.vscode/
+*.log
