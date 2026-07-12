@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: heat-exchanger-selector
+
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/heat_exchanger_db}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+
+# Учетная запись администратора, создаваемая автоматически при первом запуске.
+# В проде обязательно переопределить через переменные окружения и сменить пароль после первого входа.
+app:
+  security:
+    admin:
+      username: ${ADMIN_USERNAME:admin}
+      password: ${ADMIN_PASSWORD:admin12345}
+      email: ${ADMIN_EMAIL:admin@heat-exchanger.local}
