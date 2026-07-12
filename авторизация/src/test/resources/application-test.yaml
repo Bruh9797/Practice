@@ -1,0 +1,17 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:heat_exchanger_test;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    database-platform: org.hibernate.dialect.H2Dialect
+
+app:
+  security:
+    admin:
+      username: admin
+      password: admin12345
+      email: admin@heat-exchanger.local
