@@ -43,6 +43,13 @@ def set_repeat_table_header(row):
     tr_pr.append(header)
 
 
+def prevent_row_split(row):
+    tr_pr = row._tr.get_or_add_trPr()
+    cant_split = OxmlElement("w:cantSplit")
+    cant_split.set(qn("w:val"), "true")
+    tr_pr.append(cant_split)
+
+
 def set_cell_margins(cell, top=100, start=120, bottom=100, end=120):
     tc = cell._tc
     tc_pr = tc.get_or_add_tcPr()
@@ -313,6 +320,7 @@ def format_table(table, rows):
     set_repeat_table_header(table.rows[0])
     set_table_geometry(table, rows)
     for row_index, row in enumerate(table.rows):
+        prevent_row_split(row)
         for cell in row.cells:
             if row_index == 0:
                 shade_cell(cell)
