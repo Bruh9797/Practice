@@ -17,9 +17,12 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import java.io.ByteArrayInputStream;
 import java.time.Instant;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -66,6 +69,25 @@ class CatalogApiIntegrationTest {
 
         mockMvc.perform(get("/api/admin/heat-exchangers").with(user(principal)))
                 .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void authenticatedUserCanExportFilteredCatalogToExcel() throws Exception {
+        UserPrincipal principal = principal(Role.USER, "excel-user");
+        byte[] content = mockMvc.perform(post("/api/heat-exchangers/export")
+                        .with(user(principal))
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"families\":[\"AIR_COOLED\"]}"))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsByteArray();
+
+        try (XSSFWorkbook workbook = new XSSFWorkbook(new ByteArrayInputStream(content))) {
+            assertThat(workbook.getSheet("Теплообменники")).isNotNull();
+            assertThat(workbook.getSheet("Теплообменники").getLastRowNum()).isEqualTo(6);
+            assertThat(workbook.getSheet("Теплообменники").getRow(0).getCell(0).getStringCellValue())
+                    .isEqualTo("Производитель");
+        }
     }
 
     @Test

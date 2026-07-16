@@ -19,6 +19,9 @@ public interface HeatExchangerRepository extends JpaRepository<HeatExchanger, Lo
     Optional<HeatExchanger> findOneById(Long id);
 
     @EntityGraph(attributePaths = {"manufacturer", "applications", "materials", "facts", "sources", "pressureLimits"})
+    Optional<HeatExchanger> findBySlug(String slug);
+
+    @EntityGraph(attributePaths = {"manufacturer", "applications", "materials", "facts", "sources", "pressureLimits"})
     Optional<HeatExchanger> findOneBySlugAndStatus(String slug, CatalogStatus status);
 
     @EntityGraph(attributePaths = {"manufacturer", "applications", "materials", "facts", "sources", "pressureLimits"})

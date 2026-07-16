@@ -86,6 +86,49 @@ export async function apiFetch(path, options = {}) {
   throw new ApiRequestError(payload, response.status);
 }
 
+/** @param {string} path @param {RequestInit & {body?:unknown, filename?:string, retryCsrf?:boolean}} options */
+export async function apiDownload(path, options = {}) {
+  const method = (options.method ?? 'GET').toUpperCase();
+  const headers = new Headers(options.headers ?? {});
+  headers.set('Accept', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+  if (!SAFE_METHODS.has(method)) {
+    const token = await ensureCsrf();
+    headers.set(token.headerName ?? 'X-CSRF-TOKEN', token.token);
+  }
+
+  let body = options.body;
+  if (body != null && typeof body !== 'string') {
+    headers.set('Content-Type', 'application/json');
+    body = JSON.stringify(body);
+  }
+  const response = await fetch(path, { ...options, method, headers, body, credentials: 'include' });
+  if (!response.ok) {
+    const payload = await parseBody(response);
+    if (response.status === 403 && !options.retryCsrf && ['CSRF_INVALID', 'CSRF_MISSING'].includes(payload?.code)) {
+      clearCsrf();
+      await refreshCsrf();
+      return apiDownload(path, { ...options, retryCsrf: true });
+    }
+    if (response.status === 401 || (response.status === 403 && payload?.code === 'ACCESS_DENIED')) {
+      await unauthorizedHandler?.({ status: response.status, code: payload?.code });
+    }
+    throw new ApiRequestError(payload, response.status);
+  }
+
+  const disposition = response.headers.get('content-disposition') ?? '';
+  const encodedName = disposition.match(/filename\*=UTF-8''([^;]+)/i)?.[1];
+  const plainName = disposition.match(/filename="?([^";]+)"?/i)?.[1];
+  const filename = options.filename || (encodedName ? decodeURIComponent(encodedName) : plainName) || 'thermoselect.xlsx';
+  const url = URL.createObjectURL(await response.blob());
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+}
+
 export function getErrorMessage(error) {
   if (error instanceof ApiRequestError) {
     return [error.message, ...error.details].filter(Boolean).join(' · ');

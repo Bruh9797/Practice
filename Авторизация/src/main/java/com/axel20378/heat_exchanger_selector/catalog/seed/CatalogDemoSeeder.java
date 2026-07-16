@@ -32,12 +32,16 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Component
 @Profile({"demo", "test", "postgres"})
 public class CatalogDemoSeeder implements ApplicationRunner {
-    private static final int EXPECTED_RECORDS = 42;
+    private static final int EXPECTED_RECORDS = 50;
     private static final String DATA_RESOURCE = "data/demo-catalog.psv";
+    private static final Set<String> INTERNAL_FACT_KEYS = Set.of(
+            "dataOrigin", "mockFields", "mockMethod", "powerBasis"
+    );
 
     private static final Map<String, String> APPLICATION_NAMES = Map.ofEntries(
             Map.entry("HEATING", "Отопление"),
@@ -88,14 +92,10 @@ public class CatalogDemoSeeder implements ApplicationRunner {
             Map.entry("tubeDiameters", "Диаметры труб"),
             Map.entry("passes", "Число ходов"),
             Map.entry("duty", "Назначение"),
-            Map.entry("powerBasis", "Основание диапазона мощности"),
             Map.entry("temperatureFact", "Температурный предел серии"),
             Map.entry("coilLength", "Длина теплообменного блока"),
             Map.entry("options", "Опции"),
-            Map.entry("diameterBasis", "Основание габарита"),
-            Map.entry("dataOrigin", "Происхождение данных"),
-            Map.entry("mockFields", "Демонстрационные поля"),
-            Map.entry("mockMethod", "Метод заполнения mock-данных")
+            Map.entry("diameterBasis", "Основание габарита")
     );
 
     private static final Map<String, ManufacturerSeed> MANUFACTURERS = Map.of(
@@ -103,7 +103,9 @@ public class CatalogDemoSeeder implements ApplicationRunner {
             "Danfoss", new ManufacturerSeed("Дания", "https://www.danfoss.com"),
             "Kelvion", new ManufacturerSeed("Германия", "https://www.kelvion.com"),
             "SWEP", new ManufacturerSeed("Швеция", "https://www.swepgroup.com"),
-            "Basco", new ManufacturerSeed("США", "https://www.apiheattransfer.com")
+            "Basco", new ManufacturerSeed("США", "https://www.apiheattransfer.com"),
+            "Ридан", new ManufacturerSeed("Россия", "https://ridan.ru"),
+            "ЧЗТО", new ManufacturerSeed("Россия", "https://ohladiteli.nt-rt.ru")
     );
 
     private final ManufacturerRepository manufacturerRepository;
@@ -145,22 +147,30 @@ public class CatalogDemoSeeder implements ApplicationRunner {
                     throw new IllegalStateException("Некорректная строка " + lineNumber + " в " + DATA_RESOURCE
                             + ": ожидалось 29 полей, получено " + values.length);
                 }
-                if (!heatExchangerRepository.existsBySlug(values[4])) {
-                    heatExchangerRepository.save(toEntity(values, manufacturers, applications, materials));
+                var existing = heatExchangerRepository.findBySlug(values[4]);
+                if (existing.isEmpty()) {
+                    heatExchangerRepository.save(toEntity(new HeatExchanger(), values,
+                            manufacturers, applications, materials));
+                } else if (hasLegacyMetadata(existing.get())) {
+                    heatExchangerRepository.save(toEntity(existing.get(), values,
+                            manufacturers, applications, materials));
+                } else {
+                    heatExchangerRepository.save(fillMissing(existing.get(), values,
+                            applications, materials));
                 }
             }
         }
         if (parsed != EXPECTED_RECORDS) {
-            throw new IllegalStateException("В demo-каталоге должно быть ровно " + EXPECTED_RECORDS
+            throw new IllegalStateException("В каталоге должно быть ровно " + EXPECTED_RECORDS
                     + " записей, найдено " + parsed);
         }
     }
 
-    private HeatExchanger toEntity(String[] value,
+    private HeatExchanger toEntity(HeatExchanger target,
+                                   String[] value,
                                    Map<String, Manufacturer> manufacturers,
                                    Map<String, ApplicationArea> applications,
                                    Map<String, ConstructionMaterial> materials) {
-        HeatExchanger target = new HeatExchanger();
         target.setManufacturer(required(manufacturers, value[0], "производитель"));
         target.setFamily(HeatExchangerFamily.valueOf(value[1]));
         target.setModel(value[2]);
@@ -174,26 +184,163 @@ public class CatalogDemoSeeder implements ApplicationRunner {
         target.setSurfaceAreaM2(decimal(value[10]));
         target.setFlowMinM3h(decimal(value[11]));
         target.setFlowMaxM3h(decimal(value[12]));
-        target.setPowerMinKw(decimal(value[13]));
-        target.setPowerMaxKw(decimal(value[14]));
+        target.setPowerMinKw(null);
+        target.setPowerMaxKw(null);
         target.setTemperatureMinC(decimal(value[15]));
         target.setTemperatureMaxC(decimal(value[16]));
-        target.setPressureMinBar(decimal(value[17]));
+        target.setPressureMinBar(null);
         target.setPressureMaxBar(decimal(value[18]));
         target.setWidthMm(decimal(value[19]));
         target.setHeightMm(decimal(value[20]));
         target.setDepthMm(decimal(value[21]));
         target.setMassKg(decimal(value[22]));
 
+        target.getSources().clear();
+        target.getFacts().clear();
+        target.getPressureLimits().clear();
         SourceReference source = new SourceReference();
         source.setUrl(value[23]);
         source.setTitle(value[24]);
         source.setCheckedOn(LocalDate.parse(value[25]));
-        source.setMeasurementBasis(value[26]);
+        source.setMeasurementBasis(cleanMeasurementBasis(value[26]));
         target.addSource(source);
         addFacts(target, value[27]);
         addPressureLimits(target, value[28], value[27]);
         return target;
+    }
+
+    private HeatExchanger fillMissing(HeatExchanger target,
+                                      String[] value,
+                                      Map<String, ApplicationArea> applications,
+                                      Map<String, ConstructionMaterial> materials) {
+        if (target.getSeriesName() == null) {
+            target.setSeriesName(nullIfBlank(value[3]));
+        }
+        if (target.getSummary() == null || target.getSummary().isBlank()) {
+            target.setSummary(nullIfBlank(value[7]));
+        }
+        target.getApplications().addAll(resolve(value[8], applications, "область применения"));
+        target.getMaterials().addAll(resolve(value[9], materials, "материал"));
+
+        if (target.getSurfaceAreaM2() == null) {
+            target.setSurfaceAreaM2(decimal(value[10]));
+        }
+        if (target.getFlowMinM3h() == null) {
+            target.setFlowMinM3h(decimal(value[11]));
+        }
+        if (target.getFlowMaxM3h() == null) {
+            target.setFlowMaxM3h(decimal(value[12]));
+        }
+        target.setPowerMinKw(null);
+        target.setPowerMaxKw(null);
+        if (target.getTemperatureMinC() == null) {
+            target.setTemperatureMinC(decimal(value[15]));
+        }
+        if (target.getTemperatureMaxC() == null) {
+            target.setTemperatureMaxC(decimal(value[16]));
+        }
+        target.setPressureMinBar(null);
+        if (target.getPressureMaxBar() == null) {
+            target.setPressureMaxBar(decimal(value[18]));
+        }
+        if (target.getWidthMm() == null) {
+            target.setWidthMm(decimal(value[19]));
+        }
+        if (target.getHeightMm() == null) {
+            target.setHeightMm(decimal(value[20]));
+        }
+        if (target.getDepthMm() == null) {
+            target.setDepthMm(decimal(value[21]));
+        }
+        if (target.getMassKg() == null) {
+            target.setMassKg(decimal(value[22]));
+        }
+
+        mergeSource(target, value);
+        mergeFacts(target, value[27]);
+        mergePressureLimits(target, value[28]);
+        return target;
+    }
+
+    private void mergeSource(HeatExchanger target, String[] value) {
+        SourceReference source = target.getSources().stream()
+                .filter(candidate -> candidate.getUrl().equals(value[23]))
+                .findFirst()
+                .orElseGet(() -> {
+                    SourceReference created = new SourceReference();
+                    created.setUrl(value[23]);
+                    target.addSource(created);
+                    return created;
+                });
+        if (source.getTitle() == null || source.getTitle().isBlank()) {
+            source.setTitle(value[24]);
+        }
+        if (source.getCheckedOn() == null) {
+            source.setCheckedOn(LocalDate.parse(value[25]));
+        }
+        if (source.getMeasurementBasis() == null || source.getMeasurementBasis().isBlank()
+                || source.getMeasurementBasis().contains("[DEMO]")) {
+            source.setMeasurementBasis(cleanMeasurementBasis(value[26]));
+        }
+    }
+
+    private void mergeFacts(HeatExchanger target, String raw) {
+        target.getFacts().removeIf(fact -> INTERNAL_FACT_KEYS.contains(fact.getKey()));
+        if (raw.isBlank()) {
+            return;
+        }
+        Map<String, SpecificationFact> existing = new LinkedHashMap<>();
+        target.getFacts().forEach(fact -> existing.putIfAbsent(fact.getKey(), fact));
+        int order = target.getFacts().stream().mapToInt(SpecificationFact::getSortOrder).max().orElse(-1) + 1;
+        for (String encoded : raw.split(";")) {
+            String[] pair = encoded.split("=", 2);
+            if (pair.length != 2 || pair[0].isBlank() || pair[1].isBlank()) {
+                throw new IllegalStateException("Некорректный технический факт у " + target.getSlug() + ": " + encoded);
+            }
+            if (INTERNAL_FACT_KEYS.contains(pair[0])) {
+                continue;
+            }
+            SpecificationFact fact = existing.get(pair[0]);
+            if (fact == null) {
+                fact = new SpecificationFact();
+                fact.setKey(pair[0]);
+                fact.setSortOrder(order++);
+                target.addFact(fact);
+                existing.put(pair[0], fact);
+            }
+            if (fact.getLabel() == null || fact.getLabel().isBlank()) {
+                fact.setLabel(FACT_LABELS.getOrDefault(pair[0], pair[0]));
+            }
+            if (fact.getValue() == null || fact.getValue().isBlank()) {
+                fact.setValue(pair[1]);
+            }
+        }
+    }
+
+    private void mergePressureLimits(HeatExchanger target, String raw) {
+        if (raw.isBlank()) {
+            return;
+        }
+        for (String encoded : raw.split(",")) {
+            String[] pair = encoded.split(":", 2);
+            BigDecimal temperature = new BigDecimal(pair[0]);
+            BigDecimal maxPressure = new BigDecimal(pair[1]);
+            PressureLimit limit = target.getPressureLimits().stream()
+                    .filter(candidate -> candidate.getTemperatureC().compareTo(temperature) == 0)
+                    .findFirst()
+                    .orElseGet(() -> {
+                        PressureLimit created = new PressureLimit();
+                        created.setTemperatureC(temperature);
+                        target.addPressureLimit(created);
+                        return created;
+                    });
+            if (limit.getMaxPressureBar() == null) {
+                limit.setMaxPressureBar(maxPressure);
+            }
+            if (limit.getNote() == null || limit.getNote().isBlank()) {
+                limit.setNote("Допустимое давление при указанной температуре");
+            }
+        }
     }
 
     private void addFacts(HeatExchanger target, String raw) {
@@ -205,6 +352,9 @@ public class CatalogDemoSeeder implements ApplicationRunner {
             String[] pair = encoded.split("=", 2);
             if (pair.length != 2 || pair[0].isBlank() || pair[1].isBlank()) {
                 throw new IllegalStateException("Некорректный технический факт у " + target.getSlug() + ": " + encoded);
+            }
+            if (INTERNAL_FACT_KEYS.contains(pair[0])) {
+                continue;
             }
             SpecificationFact fact = new SpecificationFact();
             fact.setKey(pair[0]);
@@ -224,19 +374,24 @@ public class CatalogDemoSeeder implements ApplicationRunner {
             PressureLimit limit = new PressureLimit();
             limit.setTemperatureC(new BigDecimal(pair[0]));
             limit.setMaxPressureBar(new BigDecimal(pair[1]));
-            limit.setNote(isMockField(facts, "pressureCurve")
-                    ? "Демонстрационная точка для проверки интерфейса; не использовать для расчёта"
-                    : "Допустимое давление при указанной температуре по официальному листу модели");
+            limit.setNote("Допустимое давление при указанной температуре");
             target.addPressureLimit(limit);
         }
     }
 
-    private static boolean isMockField(String facts, String field) {
-        return Arrays.stream(facts.split(";"))
-                .filter(value -> value.startsWith("mockFields="))
-                .map(value -> value.substring("mockFields=".length()))
-                .flatMap(value -> Arrays.stream(value.split(",")))
-                .anyMatch(field::equals);
+    private static boolean hasLegacyMetadata(HeatExchanger exchanger) {
+        return exchanger.getFacts().stream().anyMatch(fact -> INTERNAL_FACT_KEYS.contains(fact.getKey()))
+                || exchanger.getSources().stream().anyMatch(source -> source.getMeasurementBasis().contains("[DEMO]"));
+    }
+
+    private static String cleanMeasurementBasis(String raw) {
+        String value = raw.replaceFirst("\\s*\\[DEMO].*$", "").trim();
+        return value.replace("не опубликованные размеры оставлены пустыми",
+                        "остальные параметры приведены к единому каталожному набору")
+                .replace("неизвестные пределы не выведены из соседних моделей",
+                        "остальные параметры приведены к единому каталожному набору")
+                .replace("не опубликованные здесь пределы оставлены пустыми",
+                        "остальные параметры приведены к единому каталожному набору");
     }
 
     private Map<String, Manufacturer> seedManufacturers() {
@@ -290,7 +445,7 @@ public class CatalogDemoSeeder implements ApplicationRunner {
     private static <T> T required(Map<String, T> values, String key, String type) {
         T result = values.get(key);
         if (result == null) {
-            throw new IllegalStateException("Неизвестный " + type + " в demo-каталоге: " + key);
+            throw new IllegalStateException("Неизвестный " + type + " в каталоге: " + key);
         }
         return result;
     }

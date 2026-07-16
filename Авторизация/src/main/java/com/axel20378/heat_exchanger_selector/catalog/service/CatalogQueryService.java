@@ -63,7 +63,7 @@ public class CatalogQueryService {
     public SearchPage search(SearchRequest rawRequest) {
         SearchRequest request = rawRequest == null
                 ? new SearchRequest(null, Set.of(), Set.of(), Set.of(), Set.of(), null, null, null,
-                null, null, 0, DEFAULT_PAGE_SIZE)
+                null, 0, DEFAULT_PAGE_SIZE)
                 : rawRequest;
         int page = request.page() == null ? 0 : request.page();
         int size = request.size() == null ? DEFAULT_PAGE_SIZE : request.size();
@@ -93,7 +93,7 @@ public class CatalogQueryService {
 
             List<String> reasons = new ArrayList<>();
             if (!terms.isEmpty()) {
-                reasons.add("Совпадение с текстовым запросом: " + Math.round(textScore * 100) + "%");
+                reasons.add("Модель соответствует текстовому запросу");
             }
             if (!requestedApplications.isEmpty()) {
                 reasons.add("Подходит для выбранных областей применения");
@@ -235,17 +235,6 @@ public class CatalogQueryService {
             reasons.add("Требуемый расход входит в диапазон " + exchanger.getFlowMinM3h() + "–"
                     + exchanger.getFlowMaxM3h() + " м³/ч");
         }
-        if (request.requiredPowerKw() != null) {
-            active = true;
-            if (exchanger.getPowerMinKw() == null || exchanger.getPowerMaxKw() == null) {
-                return NumericEvaluation.unknownResult();
-            }
-            if (!inside(request.requiredPowerKw(), exchanger.getPowerMinKw(), exchanger.getPowerMaxKw())) {
-                return NumericEvaluation.rejected();
-            }
-            scores.add(rangeCloseness(request.requiredPowerKw(), exchanger.getPowerMinKw(), exchanger.getPowerMaxKw()));
-            reasons.add("Требуемая мощность входит в опубликованный диапазон серии; нужен расчёт рабочего режима");
-        }
         if (request.requiredTemperatureC() != null) {
             active = true;
             if (exchanger.getTemperatureMinC() == null || exchanger.getTemperatureMaxC() == null) {
@@ -322,8 +311,7 @@ public class CatalogQueryService {
         int known = 0;
         Object[] numeric = {
                 value.getSurfaceAreaM2(), value.getFlowMinM3h(), value.getFlowMaxM3h(),
-                value.getPowerMinKw(), value.getPowerMaxKw(), value.getTemperatureMinC(),
-                value.getTemperatureMaxC(), value.getPressureMinBar(), value.getPressureMaxBar(),
+                value.getTemperatureMinC(), value.getTemperatureMaxC(), value.getPressureMaxBar(),
                 value.getWidthMm(), value.getHeightMm(), value.getDepthMm(), value.getMassKg()
         };
         for (Object field : numeric) {

@@ -40,8 +40,7 @@ public class CatalogMapper {
                 value.getId(), value.getVersion(), value.getSlug(), manufacturer(value.getManufacturer()),
                 value.getModel(), value.getSeriesName(), value.getFamily(), value.getGranularity(),
                 value.getStatus(), value.getSummary(), value.getSurfaceAreaM2(), value.getFlowMinM3h(),
-                value.getFlowMaxM3h(), value.getPowerMinKw(), value.getPowerMaxKw(),
-                value.getTemperatureMinC(), value.getTemperatureMaxC(), value.getPressureMinBar(),
+                value.getFlowMaxM3h(), value.getTemperatureMinC(), value.getTemperatureMaxC(),
                 value.getPressureMaxBar(), value.getWidthMm(), value.getHeightMm(), value.getDepthMm(),
                 value.getMassKg(),
                 value.getApplications().stream().sorted(Comparator.comparing(ApplicationArea::getName))
@@ -50,18 +49,16 @@ public class CatalogMapper {
                         .map(this::material).toList(),
                 value.getFacts().stream().map(this::fact).toList(),
                 value.getSources().stream().map(this::source).toList(),
-                value.getPressureLimits().stream().map(this::pressureLimit).toList(),
-                containsMockData(value));
+                value.getPressureLimits().stream().map(this::pressureLimit).toList());
     }
 
     public SearchItem searchItem(HeatExchanger value, int score, int completeness, List<String> reasons) {
         HeatExchangerDetail detail = detail(value);
         return new SearchItem(detail.id(), detail.slug(), detail.manufacturer(), detail.model(),
                 detail.seriesName(), detail.family(), detail.granularity(), detail.summary(), score,
-                confidenceCode(detail.granularity()), completeness, reasons, detail.containsMockData(), detail.surfaceAreaM2(),
-                detail.flowMinM3h(), detail.flowMaxM3h(),
-                detail.powerMinKw(), detail.powerMaxKw(), detail.temperatureMinC(), detail.temperatureMaxC(),
-                detail.pressureMinBar(), detail.pressureMaxBar(), detail.widthMm(), detail.heightMm(),
+                confidenceCode(detail.granularity()), completeness, reasons, detail.surfaceAreaM2(),
+                detail.flowMinM3h(), detail.flowMaxM3h(), detail.temperatureMinC(), detail.temperatureMaxC(),
+                detail.pressureMaxBar(), detail.widthMm(), detail.heightMm(),
                 detail.depthMm(), detail.massKg(), detail.applications(), detail.materials());
     }
 
@@ -83,10 +80,5 @@ public class CatalogMapper {
             case STANDARD_MODEL -> "STANDARD_MODEL";
             case SERIES -> "SERIES_RANGE";
         };
-    }
-
-    private boolean containsMockData(HeatExchanger value) {
-        return value.getFacts().stream()
-                .anyMatch(fact -> "mockFields".equals(fact.getKey()) && !fact.getValue().isBlank());
     }
 }

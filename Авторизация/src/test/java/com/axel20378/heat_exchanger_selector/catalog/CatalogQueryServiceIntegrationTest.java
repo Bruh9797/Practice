@@ -26,22 +26,21 @@ class CatalogQueryServiceIntegrationTest {
     private CatalogQueryService service;
 
     @Test
-    void fullyPopulatedDemoCatalogNeverReturnsInsufficientArea() {
+    void fullyPopulatedCatalogNeverReturnsInsufficientArea() {
         SearchRequest request = new SearchRequest(null, Set.of(), Set.of(), Set.of(), Set.of(),
-                new BigDecimal("5"), null, null, null, null, 0, 100);
+                new BigDecimal("5"), null, null, null, 0, 100);
 
         var result = service.search(request);
 
         assertThat(result.excludedUnknownCount()).isZero();
         assertThat(result.items()).isNotEmpty().allSatisfy(item ->
                 assertThat(item.surfaceAreaM2()).isGreaterThanOrEqualTo(new BigDecimal("5")));
-        assertThat(result.items()).allSatisfy(item -> assertThat(item.containsMockData()).isTrue());
     }
 
     @Test
     void activeCriteriaAreRankedAndPaginationOrderIsStable() {
         SearchRequest request = new SearchRequest("T6 BFG", Set.of(HeatExchangerFamily.PLATE), Set.of(),
-                Set.of("HEATING"), Set.of("ALLOY_316"), null, null, null, null, null, 0, 3);
+                Set.of("HEATING"), Set.of("ALLOY_316"), null, null, null, null, 0, 3);
 
         var first = service.search(request);
         var repeated = service.search(request);
@@ -59,7 +58,7 @@ class CatalogQueryServiceIntegrationTest {
     @Test
     void comparePreservesRequestedOrderAndRejectsDuplicates() {
         var page = service.search(new SearchRequest(null, Set.of(), Set.of(), Set.of(), Set.of(),
-                null, null, null, null, null, 0, 2));
+                null, null, null, null, 0, 2));
         List<Long> reverse = List.of(page.items().get(1).id(), page.items().get(0).id());
 
         var comparison = service.compare(new CompareRequest(reverse));

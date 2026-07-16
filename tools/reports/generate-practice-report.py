@@ -438,6 +438,7 @@ def add_source_content(document):
             continue
         if stripped == "```" and in_code:
             paragraph = document.add_paragraph()
+            paragraph.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.LEFT
             paragraph.paragraph_format.first_line_indent = Cm(0)
             paragraph.paragraph_format.left_indent = Cm(0.7)
             paragraph.paragraph_format.line_spacing = 1.0

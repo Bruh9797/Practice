@@ -26,7 +26,7 @@ export function LandingPage() {
               {!isAuthenticated && <Link className="button button--glass button--large" to="/login">Уже есть аккаунт</Link>}
             </div>
             <div className="hero__trust">
-              <span><CheckCircle2 /> 42 паспортные записи</span>
+              <span><CheckCircle2 /> 50 записей оборудования</span>
               <span><CheckCircle2 /> 4 семейства аппаратов</span>
               <span><CheckCircle2 /> Источник у каждого параметра</span>
             </div>
@@ -36,7 +36,7 @@ export function LandingPage() {
               <div className="hero-device__top"><span>THERMO / LIVE SELECTOR</span><i /></div>
               <ExchangerVisual family="PLATE" size="hero" />
               <div className="hero-device__metric hero-device__metric--a"><small>Рабочее давление</small><strong>30 bar</strong><span>паспортный предел</span></div>
-              <div className="hero-device__metric hero-device__metric--b"><small>Совпадение</small><strong>94%</strong><span>точная конфигурация</span></div>
+              <div className="hero-device__metric hero-device__metric--b"><small>Каталог</small><strong>50</strong><span>моделей и серий</span></div>
               <div className="hero-device__chart"><i /><i /><i /><i /><i /><i /><i /></div>
             </div>
           </div>
@@ -61,7 +61,7 @@ export function LandingPage() {
           <div><span className="eyebrow eyebrow--light">Как работает подбор</span><h2>От требований к объяснимому результату</h2><p>Алгоритм не подменяет инженерный расчёт. Он применяет строгие ограничения, ранжирует оставшиеся модели и показывает неполноту данных.</p></div>
           <ol className="workflow-list">
             <li><span><Search /></span><div><strong>Задайте критерии</strong><p>Тип, производитель, область применения, материал, давление, температура и габариты.</p></div></li>
-            <li><span><BarChart3 /></span><div><strong>Получите рейтинг</strong><p>Весовые критерии и близость параметров формируют прозрачную оценку 0–100.</p></div></li>
+            <li><span><BarChart3 /></span><div><strong>Получите выборку</strong><p>Строгие ограничения оставляют только подходящие модели и упорядочивают результат.</p></div></li>
             <li><span><GitCompareArrows /></span><div><strong>Сравните до четырёх</strong><p>Общие и специальные характеристики выстраиваются рядом с подсветкой различий.</p></div></li>
           </ol>
         </div>
@@ -70,7 +70,7 @@ export function LandingPage() {
       <section className="section">
         <div className="container proof-grid">
           <div className="proof-card"><ShieldCheck /><strong>Контролируемый доступ</strong><p>Поиск доступен USER и ADMIN. Каталог изменяет только администратор.</p></div>
-          <div className="proof-card"><Database /><strong>Данные производителей</strong><p>Alfa Laval, Danfoss, Kelvion, SWEP и API Heat Transfer.</p></div>
+          <div className="proof-card"><Database /><strong>Данные производителей</strong><p>Международные бренды, российские модели «Ридан» и советские типовые серии.</p></div>
           <div className="proof-card"><GitCompareArrows /><strong>Честное сравнение</strong><p>Неизвестные показатели остаются пустыми и не проходят строгий фильтр.</p></div>
         </div>
       </section>

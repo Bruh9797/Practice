@@ -14,7 +14,7 @@ export function SearchFilters({ filters, setFilters, lookups, onSubmit, mobileOp
   const materials = optionsOf(lookups.materials);
 
   function reset() {
-    setFilters({ query: '', family: '', manufacturerId: '', applicationCode: '', materialCode: '', requiredPressureBar: '', requiredTemperatureC: '', requiredFlowM3h: '', requiredSurfaceAreaM2: '', requiredPowerKw: '', page: 0, size: filters.size || 12, sort: 'RELEVANCE' });
+    setFilters({ query: '', family: '', manufacturerId: '', applicationCode: '', materialCode: '', requiredPressureBar: '', requiredTemperatureC: '', requiredFlowM3h: '', requiredSurfaceAreaM2: '', page: 0, size: filters.size || 12, sort: 'RELEVANCE' });
   }
 
   function submit(event) { event.preventDefault(); onSubmit(); setMobileOpen(false); }
@@ -35,7 +35,6 @@ export function SearchFilters({ filters, setFilters, lookups, onSubmit, mobileOp
           <div className="unit-input"><label>Температура не ниже<input inputMode="decimal" type="number" step="1" value={filters.requiredTemperatureC} onChange={(e) => set('requiredTemperatureC', e.target.value)} /></label><span>°C</span></div>
           <div className="unit-input"><label>Расход не менее<input inputMode="decimal" type="number" min="0" step="0.1" value={filters.requiredFlowM3h} onChange={(e) => set('requiredFlowM3h', e.target.value)} /></label><span>м³/ч</span></div>
           <div className="unit-input"><label>Площадь не менее<input inputMode="decimal" type="number" min="0" step="0.1" value={filters.requiredSurfaceAreaM2} onChange={(e) => set('requiredSurfaceAreaM2', e.target.value)} /></label><span>м²</span></div>
-          <div className="unit-input"><label>Мощность серии от<input inputMode="decimal" type="number" min="0" step="1" value={filters.requiredPowerKw} onChange={(e) => set('requiredPowerKw', e.target.value)} /></label><span>кВт</span></div>
           <p className="filter-hint">Неизвестное паспортное значение не считается совпадением.</p>
         </div>
         <div className="filters-panel__actions"><button className="button button--primary button--full" type="submit"><Filter size={17} /> Применить {count > 0 && <span>{count}</span>}</button><button className="button button--ghost button--full" type="button" onClick={reset}><RotateCcw size={16} /> Сбросить</button></div>
@@ -51,7 +50,7 @@ export function toSearchRequest(filters) {
   if (filters.manufacturerId) request.manufacturerIds = [Number(filters.manufacturerId)];
   if (filters.applicationCode) request.applicationCodes = [filters.applicationCode];
   if (filters.materialCode) request.materialCodes = [filters.materialCode];
-  ['requiredPressureBar', 'requiredTemperatureC', 'requiredFlowM3h', 'requiredSurfaceAreaM2', 'requiredPowerKw'].forEach((key) => {
+  ['requiredPressureBar', 'requiredTemperatureC', 'requiredFlowM3h', 'requiredSurfaceAreaM2'].forEach((key) => {
     const value = numberValue(filters[key]);
     if (value !== undefined) request[key] = value;
   });

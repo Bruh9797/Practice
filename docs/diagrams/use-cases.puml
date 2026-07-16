@@ -17,6 +17,7 @@ rectangle "ThermoSelect" {
   usecase "Вход" as UC_Login
   usecase "Выход" as UC_Logout
   usecase "Поиск и фильтрация" as UC_Search
+  usecase "Выгрузка в Excel" as UC_Export
   usecase "Просмотр карточки" as UC_Detail
   usecase "Сравнение до 4 моделей" as UC_Compare
   usecase "Просмотр аккаунта" as UC_Account
@@ -32,6 +33,7 @@ User --|> Guest
 Admin --|> User
 User --> UC_Logout
 User --> UC_Search
+User --> UC_Export
 User --> UC_Detail
 User --> UC_Compare
 User --> UC_Account
@@ -40,6 +42,7 @@ Admin --> UC_Status
 Admin --> UC_Manufacturers
 Admin --> UC_Users
 UC_Search .> UC_Detail : <<include>>
+UC_Export .> UC_Search : <<extend>>
 UC_Compare .> UC_Detail : <<extend>>
 UC_Catalog .> UC_Status : <<include>>
 @enduml

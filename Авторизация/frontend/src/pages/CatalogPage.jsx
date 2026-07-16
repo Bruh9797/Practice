@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { AlertTriangle, ChevronLeft, ChevronRight, GitCompareArrows, Grid2X2, ListFilter, Rows3, SlidersHorizontal, X } from 'lucide-react';
+import { AlertTriangle, ChevronLeft, ChevronRight, Download, GitCompareArrows, Grid2X2, ListFilter, Rows3, SlidersHorizontal, X } from 'lucide-react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { apiFetch, getErrorMessage } from '../api/client.js';
+import { apiDownload, apiFetch, getErrorMessage } from '../api/client.js';
 import { useCompare } from '../context/CompareContext.jsx';
 import { LoadingScreen } from '../components/LoadingScreen.jsx';
 import { ResultCard } from '../components/ResultCard.jsx';
 import { SearchFilters, toSearchRequest } from '../components/SearchFilters.jsx';
 
-const DEFAULTS = { query: '', family: '', manufacturerId: '', applicationCode: '', materialCode: '', requiredPressureBar: '', requiredTemperatureC: '', requiredFlowM3h: '', requiredSurfaceAreaM2: '', requiredPowerKw: '', page: 0, size: 12, sort: 'RELEVANCE' };
+const DEFAULTS = { query: '', family: '', manufacturerId: '', applicationCode: '', materialCode: '', requiredPressureBar: '', requiredTemperatureC: '', requiredFlowM3h: '', requiredSurfaceAreaM2: '', page: 0, size: 12, sort: 'RELEVANCE' };
 
 function fromParams(params) {
   const result = { ...DEFAULTS };
@@ -38,6 +38,7 @@ export function CatalogPage() {
   const [error, setError] = useState('');
   const [mobileFilters, setMobileFilters] = useState(false);
   const [compareWarning, setCompareWarning] = useState(false);
+  const [exporting, setExporting] = useState(false);
   const compare = useCompare();
 
   useEffect(() => {
@@ -67,6 +68,17 @@ export function CatalogPage() {
   }
 
   function changeView(next) { setView(next); localStorage.setItem('thermoselect.view', next); }
+  async function exportExcel() {
+    setExporting(true); setError('');
+    try {
+      await apiDownload('/api/heat-exchangers/export', {
+        method: 'POST',
+        body: toSearchRequest({ ...filters, page: 0, size: 100 }),
+        filename: 'thermoselect-catalog.xlsx',
+      });
+    } catch (requestError) { setError(getErrorMessage(requestError)); }
+    finally { setExporting(false); }
+  }
   const range = useMemo(() => page.totalItems === 0 ? '0' : `${page.page * page.size + 1}–${Math.min((page.page + 1) * page.size, page.totalItems)}`, [page]);
 
   return (
@@ -78,7 +90,7 @@ export function CatalogPage() {
           <div className="catalog-toolbar">
             <button className="button button--secondary mobile-filter-toggle" onClick={() => setMobileFilters(true)}><SlidersHorizontal size={17} /> Фильтры</button>
             <div><strong>{page.totalItems} аппаратов</strong><span>Показаны {range}</span></div>
-            <div className="view-toggle"><button className={view === 'cards' ? 'active' : ''} onClick={() => changeView('cards')} title="Карточки"><Grid2X2 /></button><button className={view === 'table' ? 'active' : ''} onClick={() => changeView('table')} title="Таблица"><Rows3 /></button></div>
+            <div className="catalog-toolbar__actions"><button className="button button--secondary button--small" type="button" onClick={exportExcel} disabled={exporting || loading}><Download size={16} /> {exporting ? 'Формируем…' : 'Сохранить Excel'}</button><div className="view-toggle"><button className={view === 'cards' ? 'active' : ''} onClick={() => changeView('cards')} title="Карточки"><Grid2X2 /></button><button className={view === 'table' ? 'active' : ''} onClick={() => changeView('table')} title="Таблица"><Rows3 /></button></div></div>
           </div>
           {page.excludedUnknownCount > 0 && <div className="info-banner"><AlertTriangle /><span><strong>{page.excludedUnknownCount}</strong> записей исключено: у производителя нет значения для выбранного строгого критерия.</span></div>}
           {error && <div className="alert alert--error" role="alert">{error}<button className="button button--small" onClick={() => search()}>Повторить</button></div>}
@@ -87,7 +99,7 @@ export function CatalogPage() {
           ) : view === 'cards' ? (
             <div className="results-grid">{page.items.map((item) => <ResultCard key={item.id} item={item} onCompareLimit={() => setCompareWarning(true)} />)}</div>
           ) : (
-            <div className="table-scroll"><table className="data-table results-table"><thead><tr><th>Тип</th><th>Модель</th><th>Гранулярность</th><th>Давление</th><th>Темп.</th><th>Расход</th><th>Площадь</th><th>Рейтинг</th><th /></tr></thead><tbody>{page.items.map((item) => <ResultCard key={item.id} item={item} view="table" onCompareLimit={() => setCompareWarning(true)} />)}</tbody></table></div>
+            <div className="table-scroll"><table className="data-table results-table"><thead><tr><th>Тип</th><th>Модель</th><th>Давление</th><th>Темп.</th><th>Расход</th><th>Площадь</th><th /></tr></thead><tbody>{page.items.map((item) => <ResultCard key={item.id} item={item} view="table" onCompareLimit={() => setCompareWarning(true)} />)}</tbody></table></div>
           )}
           {!loading && page.totalPages > 1 && <nav className="pagination" aria-label="Страницы"><button disabled={page.page === 0} onClick={() => updatePage(page.page - 1)}><ChevronLeft /> Назад</button><span>Страница <strong>{page.page + 1}</strong> из {page.totalPages}</span><button disabled={page.page + 1 >= page.totalPages} onClick={() => updatePage(page.page + 1)}>Вперёд <ChevronRight /></button></nav>}
         </div>

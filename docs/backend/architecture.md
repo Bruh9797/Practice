@@ -9,12 +9,12 @@ flowchart LR
     B[Браузер] -->|HTTPS / один origin| SPA[React SPA]
     SPA -->|JSON + JSESSIONID + CSRF| API[Spring MVC API]
     API --> SEC[Spring Security]
-    API --> CAT[Каталог и ранжирование]
+    API --> CAT[Каталог, фильтрация и Excel]
     API --> ADM[Администрирование]
     SEC --> USERS[(users)]
-    CAT --> DB[(H2 demo / PostgreSQL)]
+    CAT --> DB[(H2 / PostgreSQL)]
     ADM --> DB
-    SEED[Проверенный demo-catalog.psv] -->|только при пустом demo-каталоге| DB
+    SEED[Проверенный каталог исходных данных] -->|только при пустом каталоге| DB
 ```
 
 Исходник: [`diagrams/components.mmd`](diagrams/components.mmd). Рендер: [`diagrams/components.svg`](diagrams/components.svg).
@@ -26,9 +26,10 @@ flowchart LR
 | React SPA | маршруты, формы, фильтры, карточки, сравнение и админские экраны |
 | API client | JSON, `credentials: include`, CSRF-токен в памяти, единая обработка ошибок |
 | Spring Security | session login/logout, CSRF, роли, повторная проверка состояния пользователя |
-| CatalogQueryService | строгие ограничения, вычисление рейтинга, пагинация и объяснения |
+| CatalogQueryService | строгие ограничения, внутреннее упорядочивание и пагинация |
+| CatalogExcelService | выгрузка отфильтрованных результатов в формат Excel |
 | CatalogAdminService | CRUD, optimistic locking, публикация и архивирование |
-| CatalogDemoSeeder | идемпотентная загрузка 42 записей только в demo-профиле |
+| CatalogDemoSeeder | идемпотентная загрузка 50 записей только в локальном профиле |
 | Flyway | одинаковая даталогическая схема H2/PostgreSQL |
 
 ## Профили

@@ -6,21 +6,19 @@ import { FAMILY_LABELS, GRANULARITY_LABELS, manufacturerName } from '../api/cont
 import { ExchangerVisual } from '../components/ExchangerVisual.jsx';
 import { LoadingScreen } from '../components/LoadingScreen.jsx';
 import { useCompare } from '../context/CompareContext.jsx';
+import { formatDimensions, formatRange, formatValue } from '../utils/formatters.js';
 
 const rows = [
   ['Семейство', (item) => FAMILY_LABELS[item.family] ?? item.family],
   ['Гранулярность', (item) => GRANULARITY_LABELS[item.granularity] ?? item.granularity],
-  ['Площадь, м²', (item) => item.surfaceAreaM2],
-  ['Расход min–max, м³/ч', (item) => range(item.flowMinM3h, item.flowMaxM3h)],
-  ['Мощность серии, кВт', (item) => range(item.powerMinKw, item.powerMaxKw)],
-  ['Температура min–max, °C', (item) => range(item.temperatureMinC, item.temperatureMaxC)],
-  ['Макс. давление, bar', (item) => item.pressureMaxBar],
-  ['Габариты Ш×В×Г, мм', (item) => dimensions(item)],
-  ['Масса, кг', (item) => item.massKg],
+  ['Площадь, м²', (item) => formatValue(item.surfaceAreaM2, '', 1)],
+  ['Расход min–max, м³/ч', (item) => formatRange(item.flowMinM3h, item.flowMaxM3h)],
+  ['Температура min–max, °C', (item) => formatRange(item.temperatureMinC, item.temperatureMaxC)],
+  ['Макс. давление, bar', (item) => formatValue(item.pressureMaxBar, '', 1)],
+  ['Габариты Ш×В×Г, мм', (item) => formatDimensions(item.widthMm, item.heightMm, item.depthMm)],
+  ['Масса, кг', (item) => formatValue(item.massKg, '', 1)],
 ];
 
-function range(min, max) { return min == null && max == null ? null : `${min ?? '—'}–${max ?? '—'}`; }
-function dimensions(item) { return [item.widthMm, item.heightMm, item.depthMm].every((value) => value == null) ? null : [item.widthMm, item.heightMm, item.depthMm].map((value) => value ?? '—').join(' × '); }
 function valueOrDash(value) { return value == null || value === '' ? '—' : value; }
 
 export function ComparePage() {

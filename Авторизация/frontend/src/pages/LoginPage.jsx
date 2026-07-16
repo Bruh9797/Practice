@@ -28,16 +28,15 @@ export function LoginPage() {
       <div className="auth-panel">
         <div className="auth-panel__aside"><span className="eyebrow eyebrow--light">ThermoSelect / Access</span><h1>Инженерные данные доступны после входа</h1><p>Авторизация защищает каталог, сравнение и административные действия.</p><div className="auth-orbit"><i /><i /><i /><LockKeyhole /></div></div>
         <div className="auth-panel__form">
-          <div><span className="eyebrow">Добро пожаловать</span><h2>Вход в систему</h2><p>Используйте личную или демонстрационную учётную запись.</p></div>
+          <div><span className="eyebrow">Добро пожаловать</span><h2>Вход в систему</h2><p>Введите данные своей учётной записи.</p></div>
           {location.state?.registered && <div className="alert alert--success">Регистрация завершена. Теперь войдите в систему.</div>}
           {error && <div className="alert alert--error" role="alert">{error}</div>}
           <form onSubmit={submit} className="form-stack">
-            <label><span>Логин</span><div className="input-with-icon"><UserRound /><input autoFocus required autoComplete="username" value={form.username} onChange={(e) => setForm({ ...form, username: e.target.value })} placeholder="demo" /></div></label>
+            <label><span>Логин</span><div className="input-with-icon"><UserRound /><input autoFocus required autoComplete="username" value={form.username} onChange={(e) => setForm({ ...form, username: e.target.value })} placeholder="Введите логин" /></div></label>
             <label><span>Пароль</span><div className="input-with-icon"><LockKeyhole /><input required minLength={8} type="password" autoComplete="current-password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} placeholder="Не менее 8 символов" /></div></label>
             <button className="button button--primary button--large button--full" disabled={submitting}>{submitting ? <span className="spinner spinner--small" /> : <>Войти <ArrowRight /></>}</button>
           </form>
           <p className="auth-switch">Нет аккаунта? <Link to="/register">Зарегистрироваться</Link></p>
-          <div className="demo-credentials"><span>Демо USER</span><code>demo / demo12345</code><span>Демо ADMIN</span><code>admin / admin12345</code></div>
         </div>
       </div>
     </section>

@@ -170,11 +170,11 @@ public class CatalogAdminService {
         target.setSurfaceAreaM2(input.surfaceAreaM2());
         target.setFlowMinM3h(input.flowMinM3h());
         target.setFlowMaxM3h(input.flowMaxM3h());
-        target.setPowerMinKw(input.powerMinKw());
-        target.setPowerMaxKw(input.powerMaxKw());
+        target.setPowerMinKw(null);
+        target.setPowerMaxKw(null);
         target.setTemperatureMinC(input.temperatureMinC());
         target.setTemperatureMaxC(input.temperatureMaxC());
-        target.setPressureMinBar(input.pressureMinBar());
+        target.setPressureMinBar(null);
         target.setPressureMaxBar(input.pressureMaxBar());
         target.setWidthMm(input.widthMm());
         target.setHeightMm(input.heightMm());
@@ -252,9 +252,7 @@ public class CatalogAdminService {
     private void validateRanges(CatalogRecordInput input) {
         List<String> errors = new java.util.ArrayList<>();
         validateRange("flowMinM3h/flowMaxM3h", input.flowMinM3h(), input.flowMaxM3h(), errors);
-        validateRange("powerMinKw/powerMaxKw", input.powerMinKw(), input.powerMaxKw(), errors);
         validateRange("temperatureMinC/temperatureMaxC", input.temperatureMinC(), input.temperatureMaxC(), errors);
-        validateRange("pressureMinBar/pressureMaxBar", input.pressureMinBar(), input.pressureMaxBar(), errors);
         if (!errors.isEmpty()) {
             throw new CatalogBadRequestException("Некорректные диапазоны характеристик", errors);
         }
