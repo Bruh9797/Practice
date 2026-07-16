@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900">
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M0,0 L12,6 L0,12 Z" fill="#52606d"/>
+    </marker>
+    <style>
+      .box { fill:#f6f3ff; stroke:#8b76e8; stroke-width:3; rx:18; }
+      .decision { fill:#fff9e6; stroke:#d99b18; stroke-width:3; }
+      .reject { fill:#fff0f0; stroke:#d45858; stroke-width:3; rx:18; }
+      .result { fill:#e9fbf3; stroke:#00a85a; stroke-width:4; rx:18; }
+      .line { fill:none; stroke:#52606d; stroke-width:4; marker-end:url(#arrow); }
+      .label { font-family:Arial, sans-serif; font-size:30px; fill:#1d2733; text-anchor:middle; dominant-baseline:middle; }
+      .small { font-family:Arial, sans-serif; font-size:24px; fill:#52606d; text-anchor:middle; }
+      .yes { fill:#008f4c; font-weight:700; }
+      .no { fill:#c74444; font-weight:700; }
+    </style>
+  </defs>
+
+  <rect class="box" x="560" y="35" width="480" height="80" rx="18" fill="#f6f3ff" stroke="#8b76e8" stroke-width="3"/>
+  <text class="label" x="800" y="75">SearchRequest</text>
+
+  <polygon class="decision" points="800,155 1010,235 800,315 590,235" fill="#fff9e6" stroke="#d99b18" stroke-width="3"/>
+  <text class="label" x="800" y="225">Запрос валиден?</text>
+
+  <rect class="reject" x="80" y="185" width="360" height="100" rx="18" fill="#fff0f0" stroke="#d45858" stroke-width="3"/>
+  <text class="label" x="260" y="220">400</text>
+  <text class="small" x="260" y="258">VALIDATION_FAILED</text>
+
+  <rect class="box" x="540" y="355" width="520" height="90" rx="18" fill="#f6f3ff" stroke="#8b76e8" stroke-width="3"/>
+  <text class="label" x="800" y="388">Только PUBLISHED</text>
+  <text class="small" x="800" y="425">категории + текст</text>
+
+  <polygon class="decision" points="800,485 1030,565 800,645 570,565" fill="#fff9e6" stroke="#d99b18" stroke-width="3"/>
+  <text class="label" x="800" y="550">Числовые условия</text>
+  <text class="small" x="800" y="588">известны и выполнены?</text>
+
+  <rect class="reject" x="1160" y="505" width="360" height="120" rx="18" fill="#fff0f0" stroke="#d45858" stroke-width="3"/>
+  <text class="label" x="1340" y="545">Исключить</text>
+  <text class="small" x="1340" y="585">неизвестное → счётчик</text>
+
+  <rect class="box" x="505" y="685" width="590" height="80" rx="18" fill="#f6f3ff" stroke="#8b76e8" stroke-width="3"/>
+  <text class="label" x="800" y="725">Близость → полнота → стабильная сортировка</text>
+
+  <rect class="result" x="560" y="805" width="480" height="70" rx="18" fill="#e9fbf3" stroke="#00a85a" stroke-width="4"/>
+  <text class="label" x="800" y="840">SearchPage + пагинация</text>
+
+  <path class="line" d="M800 115 L800 150"/>
+  <path class="line" d="M590 235 L450 235"/>
+  <text class="small no" x="520" y="215">нет</text>
+  <path class="line" d="M800 315 L800 350"/>
+  <text class="small yes" x="845" y="338">да</text>
+  <path class="line" d="M800 445 L800 480"/>
+  <path class="line" d="M1030 565 L1150 565"/>
+  <text class="small no" x="1090" y="545">нет</text>
+  <path class="line" d="M800 645 L800 680"/>
+  <text class="small yes" x="845" y="670">да</text>
+  <path class="line" d="M800 765 L800 800"/>
+</svg>

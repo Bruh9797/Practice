@@ -1,0 +1,185 @@
+{
+  "outputSlides": [
+    {
+      "outputSlide": 1,
+      "sourceSlide": 1,
+      "narrativeRole": "Титульный слайд учебной практики",
+      "reuseMode": "duplicate-slide",
+      "editTargets": [
+        { "action": "rewrite", "sourceElementIds": ["sh/algveh8z", "sh/dgzetcfa", "sh/1cvuxc7e", "sh/0bmd476t", "tb/cr254feh", "sh/ipovexwn"] }
+      ]
+    },
+    {
+      "outputSlide": 2,
+      "sourceSlide": 2,
+      "narrativeRole": "Актуальность разработки",
+      "reuseMode": "duplicate-slide",
+      "editTargets": [
+        { "action": "rewrite", "sourceElementIds": ["sh/bip8jmho", "sh/9072xkry", "sh/xof6tgvq"] }
+      ]
+    },
+    {
+      "outputSlide": 3,
+      "sourceSlide": 3,
+      "narrativeRole": "Цель и задачи практики",
+      "reuseMode": "duplicate-slide",
+      "editTargets": [
+        { "action": "rewrite", "sourceElementIds": ["sh/w7ulsvqp", "sh/cza94vmx", "sh/ylo36xwn"] }
+      ]
+    },
+    {
+      "outputSlide": 4,
+      "sourceSlide": 4,
+      "narrativeRole": "Формализованное описание поиска",
+      "reuseMode": "duplicate-slide",
+      "editTargets": [
+        { "action": "rewrite", "sourceElementIds": ["sh/v6tsv2xo", "sh/1cj2d8b6", "sh/5cva1cfq", "sh/ql8jytsj", "sh/p0batw72"] }
+      ]
+    },
+    {
+      "outputSlide": 5,
+      "sourceSlide": 5,
+      "narrativeRole": "Функциональная структура системы",
+      "reuseMode": "duplicate-slide",
+      "editTargets": [
+        { "action": "rewrite", "sourceElementIds": ["sh/j6dwfqds", "sh/dgbulwnm"] },
+        { "action": "add", "newPrimitiveAllowed": true, "zone": { "left": 80, "top": 95, "width": 800, "height": 550 }, "reason": "Центральная схема исходного слайда хранится как EMF и не импортируется artifact-tool; добавляется реальная схема ThermoSelect в освобождённую рабочую область.", "mustNotOverlapInherited": true }
+      ]
+    },
+    {
+      "outputSlide": 6,
+      "sourceSlide": 6,
+      "narrativeRole": "Блок-схема алгоритма подбора",
+      "reuseMode": "duplicate-slide",
+      "editTargets": [
+        { "action": "rewrite", "sourceElementIds": ["sh/i54bylor", "sh/yhg7epsj"] },
+        { "action": "replace", "sourceElementId": "im/e9orqlsj" }
+      ]
+    },
+    {
+      "outputSlide": 7,
+      "sourceSlide": 7,
+      "narrativeRole": "UML-варианты использования",
+      "reuseMode": "duplicate-slide",
+      "editTargets": [
+        { "action": "rewrite", "sourceElementIds": ["sh/cb2tkvap", "sh/l0vuh0rm"] },
+        { "action": "add", "newPrimitiveAllowed": true, "zone": { "left": 80, "top": 95, "width": 800, "height": 550 }, "reason": "UML-диаграмма исходного слайда хранится как неподдерживаемый EMF; добавляется существующий PNG из документации проекта.", "mustNotOverlapInherited": true }
+      ]
+    },
+    {
+      "outputSlide": 8,
+      "sourceSlide": 8,
+      "narrativeRole": "Концептуальная модель данных",
+      "reuseMode": "duplicate-slide",
+      "editTargets": [
+        { "action": "rewrite", "sourceElementIds": ["sh/18byd4zy", "sh/sjix0zy1"] },
+        { "action": "add", "newPrimitiveAllowed": true, "zone": { "left": 80, "top": 95, "width": 800, "height": 550 }, "reason": "Концептуальная схема исходного слайда хранится как неподдерживаемый EMF; добавляется реальная модель данных ThermoSelect.", "mustNotOverlapInherited": true }
+      ]
+    },
+    {
+      "outputSlide": 9,
+      "sourceSlide": 9,
+      "narrativeRole": "Даталогическая модель данных",
+      "reuseMode": "duplicate-slide",
+      "editTargets": [
+        { "action": "rewrite", "sourceElementIds": ["sh/1cfmhgne", "sh/ofq5svm5"] },
+        { "action": "replace", "sourceElementId": "im/ofmpgve5" }
+      ]
+    },
+    {
+      "outputSlide": 10,
+      "sourceSlide": 10,
+      "narrativeRole": "Обоснование выбора СУБД",
+      "reuseMode": "duplicate-slide",
+      "editTargets": [
+        { "action": "rewrite", "sourceElementIds": ["sh/xc3mho32", "sh/ydcnatkn", "sh/d87uxg3m", "tb/ixozmtgz"] }
+      ]
+    },
+    {
+      "outputSlide": 11,
+      "sourceSlide": 11,
+      "narrativeRole": "Обоснование выбора frontend и backend",
+      "reuseMode": "duplicate-slide",
+      "editTargets": [
+        { "action": "rewrite", "sourceElementIds": ["sh/xcryxg7y", "sh/250zy18b", "sh/9gza9sze", "tb/u54jydwb"] }
+      ]
+    },
+    {
+      "outputSlide": 12,
+      "sourceSlide": 12,
+      "narrativeRole": "Компонентная архитектура",
+      "reuseMode": "duplicate-slide",
+      "editTargets": [
+        { "action": "rewrite", "sourceElementIds": ["sh/1gbm9s3a", "sh/atc7epon"] },
+        { "action": "add", "newPrimitiveAllowed": true, "zone": { "left": 80, "top": 95, "width": 800, "height": 550 }, "reason": "Центральная архитектурная схема исходного слайда не импортируется из EMF; добавляется существующий PNG компонентной схемы.", "mustNotOverlapInherited": true }
+      ]
+    },
+    {
+      "outputSlide": 13,
+      "sourceSlide": 13,
+      "narrativeRole": "Характеристики программного комплекса",
+      "reuseMode": "duplicate-slide",
+      "editTargets": [
+        { "action": "rewrite", "sourceElementIds": ["sh/q50nydsj", "tb/cf2d4ry9", "sh/hcfy9k3u"] }
+      ]
+    },
+    {
+      "outputSlide": 14,
+      "sourceSlide": 14,
+      "narrativeRole": "Минимальные системные требования",
+      "reuseMode": "duplicate-slide",
+      "editTargets": [
+        { "action": "rewrite", "sourceElementIds": ["sh/xc7eds76", "tb/8b69g369", "sh/c3e1gjyd"] }
+      ]
+    },
+    {
+      "outputSlide": 15,
+      "sourceSlide": 15,
+      "narrativeRole": "Пользовательский каталог и карточка",
+      "reuseMode": "duplicate-slide",
+      "editTargets": [
+        { "action": "rewrite", "sourceElementIds": ["sh/k3y5ov21", "sh/t87ml0ji", "tb/v6tg3qtk"] },
+        { "action": "replace", "sourceElementIds": ["im/ids3ids7", "im/503mdsry"] }
+      ]
+    },
+    {
+      "outputSlide": 16,
+      "sourceSlide": 16,
+      "narrativeRole": "Администрирование каталога",
+      "reuseMode": "duplicate-slide",
+      "editTargets": [
+        { "action": "rewrite", "sourceElementIds": ["sh/9kby1g7m", "sh/kv2h4rqp", "sh/8z2h8bq1"] },
+        { "action": "replace", "sourceElementId": "im/kji90fa5" }
+      ]
+    },
+    {
+      "outputSlide": 17,
+      "sourceSlide": 17,
+      "narrativeRole": "Тестирование и Excel-выгрузка",
+      "reuseMode": "duplicate-slide",
+      "editTargets": [
+        { "action": "rewrite", "sourceElementIds": ["sh/fm58bm54", "sh/1c7e50ni", "tb/svep8zqx", "sh/honqdwnu"] },
+        { "action": "replace", "sourceElementIds": ["im/4j2d07mh", "im/5kbe9c3m", "im/ihkvyx4b"] }
+      ]
+    },
+    {
+      "outputSlide": 18,
+      "sourceSlide": 18,
+      "narrativeRole": "Выводы по результатам практики",
+      "reuseMode": "duplicate-slide",
+      "editTargets": [
+        { "action": "rewrite", "sourceElementIds": ["sh/snylgrql", "sh/wrelszu9", "sh/fapkr6pw"] }
+      ]
+    },
+    {
+      "outputSlide": 19,
+      "sourceSlide": 19,
+      "narrativeRole": "Финальный слайд благодарности",
+      "reuseMode": "duplicate-slide",
+      "editTargets": [
+        { "action": "rewrite", "sourceElementIds": ["sh/zu90b29c", "sh/9gb6xgbi"] }
+      ]
+    }
+  ],
+  "omittedSourceSlides": []
+}

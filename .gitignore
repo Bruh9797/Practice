@@ -7,3 +7,5 @@
 .idea/
 .vscode/
 *.log
+*.pptx.inspect.ndjson
+tools/unzip-shim/

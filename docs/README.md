@@ -10,6 +10,7 @@
 | [`tests/`](tests/README.md) | тест-кейсы, команды запуска и сохраняемые результаты |
 | [`logs/`](logs/README.md) | расположение и просмотр журналов приложения и сборки |
 | [`reports/`](reports/README.md) | отчёт по практике и инструкция его воспроизведения |
+| [`presentation/`](presentation/README.md) | презентация к защите, реальные экраны и материалы шаблона |
 | [`defense/`](defense/DEFENSE.md) | сценарий демонстрации, тезисы и ответы на вопросы |
 | [`diagrams/`](diagrams/) | Mermaid/PlantUML-исходники и SVG-схемы |
 

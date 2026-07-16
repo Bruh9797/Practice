@@ -20,7 +20,7 @@ EMBLEM = ROOT / "docs" / "reports" / "assets" / "institute-emblem.png"
 BODY_FONT = "Times New Roman"
 CODE_FONT = "Courier New"
 BODY_SIZE = Pt(14)
-USABLE_WIDTH_DXA = 9690
+USABLE_WIDTH_DXA = 9355
 
 
 def set_run_font(run, name=BODY_FONT, size=BODY_SIZE, bold=None, italic=None):
@@ -382,8 +382,8 @@ def configure_styles(document):
 
 def configure_sections(document):
     for section in document.sections:
-        section.page_width = Inches(8.5)
-        section.page_height = Inches(11)
+        section.page_width = Cm(21)
+        section.page_height = Cm(29.7)
         section.left_margin = Cm(3)
         section.right_margin = Cm(1.5)
         section.top_margin = Cm(2)
