@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Скачать презентацию ThermoSelect</title>
+<style>
+body{margin:0;background:#f4f7f9;color:#102b3a;font-family:system-ui,-apple-system,sans-serif;display:grid;min-height:100vh;place-items:center}
+main{width:min(560px,calc(100% - 32px));background:white;border:1px solid #d8e3e8;border-radius:20px;padding:28px;box-shadow:0 14px 40px #16384a18;text-align:center}
+h1{font-size:24px;margin:0 0 12px}p{line-height:1.5;color:#48616d}
+button{border:0;border-radius:12px;padding:14px 22px;background:#008c95;color:white;font-size:17px;font-weight:700;cursor:pointer}
+button:disabled{opacity:.6}#status{min-height:24px;margin-top:16px;font-size:14px}
+</style>
+</head>
+<body><main>
+<h1>Презентация ThermoSelect</h1>
+<p>Нажмите кнопку — браузер соберёт проверенный файл PowerPoint из частей, сохранённых в ветке Result.</p>
+<button id="download">Скачать PPTX</button>
+<div id="status"></div>
+</main>
+<script>
+const button=document.getElementById('download');
+const status=document.getElementById('status');
+const base='https://raw.githubusercontent.com/Bruh9797/Practice/Result/.upload/thermoselect-presentation/';
+button.onclick=async()=>{
+ button.disabled=true;
+ try{
+  const parts=[];
+  for(let start=0;start<76;start+=8){
+   status.textContent='Загрузка: '+Math.min(start+8,76)+' из 76 частей…';
+   const batch=Array.from({length:Math.min(8,76-start)},(_,k)=>start+k);
+   const texts=await Promise.all(batch.map(async i=>{
+    const r=await fetch(base+'part-'+String(i).padStart(3,'0')+'.b64',{cache:'no-store'});
+    if(!r.ok)throw new Error('Не загружена часть '+i);
+    return (await r.text()).trim();
+   }));
+   parts.push(...texts);
+  }
+  status.textContent='Сборка и проверка файла…';
+  const binary=atob(parts.join(''));
+  if(binary.length!==1864169)throw new Error('Неверный размер файла: '+binary.length);
+  const bytes=new Uint8Array(binary.length);
+  for(let i=0;i<binary.length;i++)bytes[i]=binary.charCodeAt(i);
+  const digest=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))).map(x=>x.toString(16).padStart(2,'0')).join('').toUpperCase();
+  if(digest!=='D90F48003732227695DAC73542ADB8B5A4736360F859057AA4037A4523F2D020')throw new Error('Контрольная сумма не совпала');
+  const url=URL.createObjectURL(new Blob([bytes],{type:'application/vnd.openxmlformats-officedocument.presentationml.presentation'}));
+  const a=document.createElement('a');
+  a.href=url;
+  a.download='Презентация_к_защите_TherмоSelect_схемы_по_образцу.pptx';
+  document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),30000);
+  status.textContent='Готово. Файл сохранён в загрузки.';
+ }catch(e){
+  status.textContent='Ошибка: '+e.message+'. Нажмите кнопку и попробуйте ещё раз.';
+  button.disabled=false;
+ }
+};
+</script></body></html>
