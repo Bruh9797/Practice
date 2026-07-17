@@ -109,7 +109,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/**").authenticated()
                         .requestMatchers(
-                                "/", "/index.html", "/favicon.ico", "/robots.txt", "/assets/**",
+                                "/", "/index.html", "/favicon.ico", "/robots.txt", "/assets/**", "/catalog-images/**",
                                 "/login", "/register", "/forbidden", "/catalog", "/heat-exchangers/**",
                                 "/compare", "/account",
                                 "/admin", "/admin/catalog", "/admin/catalog/**", "/admin/users"

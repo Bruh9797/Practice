@@ -73,6 +73,13 @@ class AuthAccessControlIntegrationTest {
     }
 
     @Test
+    void catalogImagesAreAvailableToTheBrowser() throws Exception {
+        mockMvc.perform(get("/catalog-images/test.webp"))
+                .andExpect(status().isOk())
+                .andExpect(header().string("Content-Type", "image/webp"));
+    }
+
+    @Test
     void userCanRegisterLoginAndReadOwnProfile() throws Exception {
         register("ivan", "password123", "ivan@example.com");
         MockHttpSession session = login("ivan", "password123");
