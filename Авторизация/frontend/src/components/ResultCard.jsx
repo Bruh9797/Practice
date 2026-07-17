@@ -2,7 +2,7 @@ import { ArrowUpRight, Check, GitCompareArrows, Gauge, Layers3, Thermometer, Wav
 import { Link } from 'react-router-dom';
 import { CONFIDENCE_LABELS, FAMILY_LABELS, GRANULARITY_LABELS, manufacturerName } from '../api/contracts.js';
 import { useCompare } from '../context/CompareContext.jsx';
-import { ExchangerVisual } from './ExchangerVisual.jsx';
+import { ProductPhoto } from './ProductPhoto.jsx';
 import { formatValue } from '../utils/formatters.js';
 
 function spec(item, ...keys) {
@@ -57,7 +57,7 @@ export function ResultCard({ item, view = 'cards', onCompareLimit }) {
   return (
     <article className="result-card">
       <div className="result-card__visual">
-        <ExchangerVisual family={item.family} />
+        <ProductPhoto item={item} />
         <span className="family-badge">{FAMILY_LABELS[item.family] ?? item.family}</span>
       </div>
       <div className="result-card__body">

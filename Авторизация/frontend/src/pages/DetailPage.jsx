@@ -3,7 +3,7 @@ import { ArrowLeft, ExternalLink, FileCheck2, GitCompareArrows, Info, Ruler, Tag
 import { Link, useParams } from 'react-router-dom';
 import { apiFetch, getErrorMessage } from '../api/client.js';
 import { FAMILY_LABELS, GRANULARITY_LABELS, labelOf, manufacturerName } from '../api/contracts.js';
-import { ExchangerVisual } from '../components/ExchangerVisual.jsx';
+import { ProductPhoto } from '../components/ProductPhoto.jsx';
 import { LoadingScreen } from '../components/LoadingScreen.jsx';
 import { useCompare } from '../context/CompareContext.jsx';
 import { formatValue } from '../utils/formatters.js';
@@ -44,7 +44,7 @@ export function DetailPage() {
 
   return (
     <section className="detail-page">
-      <div className="detail-hero"><div className="container"><Link className="back-link" to="/catalog"><ArrowLeft /> Назад к результатам</Link><div className="detail-hero__grid"><div><div className="eyebrow eyebrow--light">{manufacturerName(item.manufacturer)} / {item.seriesName ?? item.series}</div><h1>{name}</h1><p>{item.summary || 'Паспортная запись из официального каталога производителя.'}</p><div className="detail-tags"><span>{FAMILY_LABELS[item.family] ?? item.family}</span><span>{GRANULARITY_LABELS[item.granularity] ?? item.granularity}</span></div><div className="detail-actions"><button className={`button button--accent ${compare.has(item.id) ? 'button--selected' : ''}`} onClick={toggleCompare}><GitCompareArrows /> {compare.has(item.id) ? 'Убрать из сравнения' : 'Добавить к сравнению'}</button>{compare.ids.length >= 2 && <Link className="button button--glass" to="/compare">Открыть сравнение</Link>}</div>{warning && <p className="detail-warning">{warning}</p>}</div><ExchangerVisual family={item.family} size="detail" /></div></div></div>
+      <div className="detail-hero"><div className="container"><Link className="back-link" to="/catalog"><ArrowLeft /> Назад к результатам</Link><div className="detail-hero__grid"><div><div className="eyebrow eyebrow--light">{manufacturerName(item.manufacturer)} / {item.seriesName ?? item.series}</div><h1>{name}</h1><p>{item.summary || 'Паспортная запись из официального каталога производителя.'}</p><div className="detail-tags"><span>{FAMILY_LABELS[item.family] ?? item.family}</span><span>{GRANULARITY_LABELS[item.granularity] ?? item.granularity}</span></div><div className="detail-actions"><button className={`button button--accent ${compare.has(item.id) ? 'button--selected' : ''}`} onClick={toggleCompare}><GitCompareArrows /> {compare.has(item.id) ? 'Убрать из сравнения' : 'Добавить к сравнению'}</button>{compare.ids.length >= 2 && <Link className="button button--glass" to="/compare">Открыть сравнение</Link>}</div>{warning && <p className="detail-warning">{warning}</p>}</div><ProductPhoto item={item} size="detail" loading="eager" /></div></div></div>
 
       <div className="container detail-layout">
         <article className="detail-main">
