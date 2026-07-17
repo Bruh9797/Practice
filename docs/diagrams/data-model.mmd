@@ -1,0 +1,39 @@
+erDiagram
+    USER {
+        bigint id PK
+        varchar username UK
+        varchar email UK
+        varchar role
+        boolean enabled
+    }
+    MANUFACTURER {
+        bigint id PK
+        varchar name UK
+        varchar country
+        varchar website_url
+        bigint version
+    }
+    HEAT_EXCHANGER {
+        bigint id PK
+        bigint manufacturer_id FK
+        varchar slug UK
+        varchar family
+        varchar model
+        varchar granularity
+        varchar status
+        decimal surface_area_m2
+        decimal flow_max_m3h
+        decimal pressure_max_bar
+        bigint version
+    }
+    APPLICATION { bigint id PK varchar code UK varchar name }
+    MATERIAL { bigint id PK varchar code UK varchar name }
+    SPECIFICATION_FACT { bigint id PK bigint heat_exchanger_id FK varchar fact_key varchar fact_value }
+    SOURCE_REFERENCE { bigint id PK bigint heat_exchanger_id FK varchar url date checked_on }
+    PRESSURE_LIMIT { bigint id PK bigint heat_exchanger_id FK decimal temperature_c decimal max_pressure_bar }
+    MANUFACTURER ||--o{ HEAT_EXCHANGER : manufactures
+    HEAT_EXCHANGER }o--o{ APPLICATION : applications
+    HEAT_EXCHANGER }o--o{ MATERIAL : materials
+    HEAT_EXCHANGER ||--o{ SPECIFICATION_FACT : facts
+    HEAT_EXCHANGER ||--|{ SOURCE_REFERENCE : sources
+    HEAT_EXCHANGER ||--o{ PRESSURE_LIMIT : pressure_curve

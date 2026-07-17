@@ -1,17 +1,21 @@
 spring:
   datasource:
-    url: jdbc:h2:mem:heat_exchanger_test;DB_CLOSE_DELAY=-1
+    url: jdbc:h2:mem:thermoselect_test;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH;DB_CLOSE_DELAY=-1
     driver-class-name: org.h2.Driver
     username: sa
     password: ""
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: validate
     database-platform: org.hibernate.dialect.H2Dialect
+  flyway:
+    enabled: true
 
 app:
   security:
     admin:
       username: admin
       password: admin12345
-      email: admin@heat-exchanger.local
+      email: admin@thermoselect.local
+    demo-user:
+      enabled: false
